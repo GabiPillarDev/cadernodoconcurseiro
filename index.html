@@ -155,42 +155,42 @@ footer{font-size:12px;color:var(--muted);text-align:center;max-width:80ch;margin
 
   <div class="sec-title">
     <h2>Funil por material</h2>
-    <p>Do anúncio até a compra registrada no pixel. As faixas listradas são etapas que não vieram na exportação desta semana.</p>
+    <p>Do anúncio até a compra registrada no pixel. A etapa destacada em cor é onde cada funil mais perde.</p>
   </div>
 
   <div class="funnels" id="funnels"></div>
 
-  <footer>Fontes: Gerenciador de Anúncios do Meta (2 a 8/10), Hotmart (2 a 9/10) e Tutory. Compras do funil são as registradas pelo pixel e podem diferir das plataformas de venda. Conversão do clique: compras ÷ cliques no link.</footer>
+  <footer>Fontes: Gerenciador de Anúncios do Meta (2 a 8/10), Hotmart (2 a 9/10) e Tutory. Compras do funil são as registradas pelo pixel e podem diferir das plataformas de venda. Taxa da página: compras ÷ views da página. Taxa do checkout: compras ÷ checkouts iniciados.</footer>
 </div>
 
 <script>
 const F=[
- {m:"PCAP",s:514.06,i:37266,k:335,b:7,chip:["good","Mais vendas"],read:"<b>Segue como carro-chefe.</b> Mais compras da semana, com conversão do clique acima de 2%."},
- {m:"TRT8",s:326.12,i:24842,k:445,b:5,chip:["good","Menor custo"],read:"<b>Melhorou bastante.</b> Maior volume de cliques e o melhor custo por compra entre os materiais com mais de uma venda."},
- {m:"PMPE",s:200.31,i:21862,k:146,b:2,chip:["warn","CTR baixo"],read:"<b>Fez as primeiras vendas.</b> O CTR de 0,67% é o mais baixo da semana. Vale testar criativos novos."},
- {m:"UFBA",s:103.48,i:7593,k:139,b:1,chip:["warn","Começando"],read:"<b>Campanha nova.</b> Bom CTR. Ainda com poucos dados para avaliar a conversão."},
- {m:"PCPE",s:61.42,i:3522,k:44,b:1,chip:["warn","Começando"],read:"<b>Campanha nova.</b> Uma venda com pouco investimento. Precisa de mais volume para confirmar."}
+ {m:"PCAP",s:514.06,i:37266,k:335,v:209,o:62,b:7,chip:["good","Melhor checkout"],hl:3,hlc:"good",read:"<b>Fecha melhor que todos no checkout.</b> 11,3% de quem inicia o checkout compra. A perda maior está entre o clique e a página: só 62% carregam."},
+ {m:"TRT8",s:326.12,i:24842,k:445,v:349,o:77,b:5,chip:["warn","Gargalo na página"],hl:2,hlc:"warn",read:"<b>Muita gente chega, pouca avança.</b> Tem o maior volume de views, mas só 22% iniciam o checkout. É a menor passagem da semana."},
+ {m:"PMPE",s:200.31,i:21862,k:146,v:102,o:45,b:2,chip:["bad","Gargalo no checkout"],hl:3,hlc:"bad",read:"<b>A página convence, o checkout não fecha.</b> 44% das views iniciam o checkout, mas só 4,4% concluem. Mesmo padrão do período anterior."},
+ {m:"UFBA",s:103.48,i:7593,k:139,v:108,o:39,b:1,chip:["bad","Gargalo no checkout"],hl:3,hlc:"bad",read:"<b>Campanha nova com checkout travado.</b> Boa chegada na página e 36% iniciam o checkout. Só 1 dos 39 comprou."},
+ {m:"PCPE",s:61.42,i:3522,k:44,v:36,o:13,b:1,chip:["warn","Começando"],hl:-1,hlc:"",read:"<b>Campanha nova.</b> Funil com bons números, mas com pouco volume. Precisa de mais investimento para confirmar."}
 ];
 const n=x=>x.toLocaleString("pt-BR");
 const p=(x,d=1)=>(x*100).toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d})+"%";
 const brl=x=>"R$ "+x.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
 const W=[100,82,64,48,34], END=24;
-const COL=["var(--ink)","color-mix(in srgb,var(--ink) 45%,var(--teal-deep))","","","var(--good)"];
 let html=F.map(f=>{
-  const st=[["Impressões",f.i],["Cliques",f.k],["Views da página",null],["Checkouts",null],["Compras",f.b]];
-  const steps=["CTR <b class='num'>"+p(f.k/f.i,2)+"</b>","sem dado","sem dado","sem dado"];
+  const st=[["Impressões",f.i],["Cliques",f.k],["Views da página",f.v],["Checkouts",f.o],["Compras",f.b]];
+  const steps=[["CTR ",f.k/f.i,2,""],["",f.v/f.k,1," chegam na página"],["",f.o/f.v,1," iniciam o checkout"],["",f.b/f.o,1," compram"]];
+  const COL=["var(--ink)","color-mix(in srgb,var(--ink) 45%,var(--teal-deep))","var(--teal-deep)","var(--teal)","var(--good)"];
   let h="";
   st.forEach((s,j)=>{
-    const w=W[j], next=j<4?W[j+1]:END, ins=((w-next)/2)/w*100, na=s[1]===null;
-    h+=`<div class="band${na?" na":""}" style="width:${w}%;${na?"":"background:"+COL[j]+";"}clip-path:polygon(0 0,100% 0,${100-ins}% 100%,${ins}% 100%)"><span class="l">${s[0]}</span><span class="v num">${na?"não exportado":n(s[1])}</span></div>`;
-    if(j<4)h+=`<div class="step"><span>${steps[j]}</span></div>`;
+    const w=W[j], next=j<4?W[j+1]:END, ins=((w-next)/2)/w*100;
+    h+=`<div class="band" style="width:${w}%;background:${COL[j]};clip-path:polygon(0 0,100% 0,${100-ins}% 100%,${ins}% 100%)"><span class="l">${s[0]}</span><span class="v num">${n(s[1])}</span></div>`;
+    if(j<4){const x=steps[j];h+=`<div class="step${j===f.hl?" hl "+f.hlc:""}"><span>${x[0]}<b class="num">${p(x[1],x[2])}</b>${x[3]}</span></div>`;}
   });
   return `<article class="card">
-    <div class="card-head"><div><h2>${f.m}</h2><p>${brl(f.s)} investidos</p></div><span class="chip ${f.chip[0]}">${f.chip[1]}</span></div>
+    <div class="card-head"><div><h2>${f.m}</h2><p>${brl(f.s)} investidos<br>${brl(f.s/f.b)} por compra</p></div><span class="chip ${f.chip[0]}">${f.chip[1]}</span></div>
     <div class="funnel">${h}</div>
     <div class="rates">
-      <div class="rate"><div class="k">Conversão do clique</div><div class="x num">${p(f.b/f.k,2)}</div><div class="s">${f.b} ${f.b===1?"compra":"compras"} em ${n(f.k)} cliques</div></div>
-      <div class="rate"><div class="k">Custo por compra</div><div class="x num">${brl(f.s/f.b)}</div><div class="s">no pixel</div></div>
+      <div class="rate"><div class="k">Taxa da página</div><div class="x num">${p(f.b/f.v,2)}</div><div class="s">${f.b} ${f.b===1?"compra":"compras"} em ${n(f.v)} views</div></div>
+      <div class="rate"><div class="k">Taxa do checkout</div><div class="x num">${p(f.b/f.o)}</div><div class="s">${f.b} ${f.b===1?"compra":"compras"} em ${f.o} checkouts</div></div>
     </div>
     <p class="read">${f.read}</p>
   </article>`}).join("");
